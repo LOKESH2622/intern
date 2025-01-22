@@ -9,7 +9,7 @@ export const login = async (req, res) => {
   const { EmailId, Password } = req.body;
 
   if (!EmailId || !Password) {
-    return res.status(400).json({ message: "Email Id or Password missing" });
+    return res.status(400).json({ message: `Email Id or Password missing` });
   }
 
   try {

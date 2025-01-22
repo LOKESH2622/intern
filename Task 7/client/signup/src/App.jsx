@@ -1,14 +1,19 @@
 import React from "react";
-import SignupForm from "./signupform"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./LoginForm";
+import SignupForm from "./signupform";
 
-
-const App = () => {
+function App() {
   return (
-    <div>
-      <SignupForm />
-   
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<SignupForm />} />
+        </Routes>
+      </div>
+    </Router>
   );
-};
+}
 
 export default App;

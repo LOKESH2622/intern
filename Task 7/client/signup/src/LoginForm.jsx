@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
@@ -16,38 +17,30 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/auth/login",
-        {
-          EmailId: email,
-          Password: password,
-        },
-      );
+      const response = await axios.post("http://localhost:5000/auth/login", {
+        EmailId: email,
+        Password: password,
+      });
 
       setSuccessMessage(response.data.message || "Login successful!");
       setError("");
-      console.log("Login successful:", response.data);
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong. Please try again.");
       setSuccessMessage("");
-      console.error("Login failed:", err);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-700 to-blue-500">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-xl transform transition-all duration-500 hover:shadow-2xl">
-        <h2 className="text-3xl font-bold text-center mb-6 text-blue-700">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-400 p-4">
+      <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl">
+        <h2 className="text-4xl font-extrabold text-center mb-6 text-blue-700 drop-shadow-md">
           Welcome Back
         </h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
@@ -55,16 +48,13 @@ const Login = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+              className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your email"
               required
             />
           </div>
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
@@ -72,7 +62,7 @@ const Login = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+              className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your password"
               required
             />
@@ -80,7 +70,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
             >
               Login
             </button>
@@ -88,12 +78,9 @@ const Login = () => {
         </form>
         <p className="text-center text-sm text-gray-600 mt-6">
           Don't have an account?{" "}
-          <a
-            href="/signup"
-            className="text-blue-600 font-semibold hover:underline"
-          >
+          <Link to="/signup" className="text-blue-600 font-semibold hover:underline">
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
     </div>

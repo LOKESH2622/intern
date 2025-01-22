@@ -2,7 +2,7 @@ import React from 'react';
 
 const Header = () => {
   return (
-    <header style={styles.header}>
+    <header  style={styles.header}>
       <div style={styles.intro}>
         <h1 style={styles.title}>Welcome to Our Website</h1>
         <p style={styles.subtitle}>This is a small introduction about our website.</p>
