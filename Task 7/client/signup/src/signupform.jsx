@@ -12,151 +12,156 @@ const SignupForm = () => {
     password: "",
   });
 
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [otp, setOtp] = useState("");
+  const [otpMessage, setOtpMessage] = useState("");
+  const [isOtpStep, setIsOtpStep] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value);
+  };
+
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post("http://localhost:5000/auth/signup", formData);
-
       setSuccessMessage(response.data.message);
-      setOtp(response.data.otp);
+      setOtp(response.data.otp); // Note: For testing; remove in production
       setError("");
-      setFormData({
-        firstname: "",
-        lastname: "",
-        DOB: "",
-        mobilenumber: "",
-        emailid: "",
-        password: "",
-      });
+      setIsOtpStep(true);
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong. Please try again.");
       setSuccessMessage("");
     }
   };
 
+  const handleOtpVerification = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:5000/auth/verify-otp", {
+        emailid: formData.emailid,
+        otp,
+      });
+      setOtpMessage(response.data.message);
+      setError("");
+      setIsOtpStep(false); // Reset to signup form (or redirect to login)
+    } catch (err) {
+      setError(err.response?.data?.error || "Something went wrong. Please try again.");
+      setOtpMessage("");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-500 px-4">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-xl">
-        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Signup Form</h2>
+        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
+          {isOtpStep ? "Verify OTP" : "Signup Form"}
+        </h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {successMessage && (
+        {successMessage && !isOtpStep && (
           <p className="text-green-500 text-center mb-4">
             {successMessage} {otp && `(OTP: ${otp})`}
           </p>
         )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="firstname" className="block text-sm font-medium text-gray-700">
-              First Name
-            </label>
+        {otpMessage && <p className="text-green-500 text-center mb-4">{otpMessage}</p>}
+
+        {!isOtpStep ? (
+          <form onSubmit={handleSignup} className="space-y-6">
             <input
               type="text"
-              id="firstname"
               name="firstname"
               value={formData.firstname}
               onChange={handleChange}
+              placeholder="First Name"
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your first name"
+              className="mt-1 block w-full px-4 py-2 border rounded-lg"
             />
-          </div>
-          <div>
-            <label htmlFor="lastname" className="block text-sm font-medium text-gray-700">
-              Last Name
-            </label>
             <input
               type="text"
-              id="lastname"
               name="lastname"
               value={formData.lastname}
               onChange={handleChange}
+              placeholder="Last Name"
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your last name"
+              className="mt-1 block w-full px-4 py-2 border rounded-lg"
             />
-          </div>
-          <div>
-            <label htmlFor="dob" className="block text-sm font-medium text-gray-700">
-              Date of Birth
-            </label>
             <input
               type="date"
-              id="dob"
               name="DOB"
               value={formData.DOB}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-4 py-2 border rounded-lg"
             />
-          </div>
-          <div>
-            <label htmlFor="mobilenumber" className="block text-sm font-medium text-gray-700">
-              Mobile Number
-            </label>
             <input
               type="tel"
-              id="mobilenumber"
               name="mobilenumber"
               value={formData.mobilenumber}
               onChange={handleChange}
+              placeholder="Mobile Number"
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your mobile number"
+              className="mt-1 block w-full px-4 py-2 border rounded-lg"
             />
-          </div>
-          <div>
-            <label htmlFor="emailid" className="block text-sm font-medium text-gray-700">
-              Email ID
-            </label>
             <input
               type="email"
-              id="emailid"
               name="emailid"
               value={formData.emailid}
               onChange={handleChange}
+              placeholder="Email ID"
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your email"
+              className="mt-1 block w-full px-4 py-2 border rounded-lg"
             />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
             <input
               type="password"
-              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
+              placeholder="Password"
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your password"
+              className="mt-1 block w-full px-4 py-2 border rounded-lg"
             />
-          </div>
-          <button
-            type="submit"
-            className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-          >
-            Signup
-          </button>
-        </form>
-        <p className="text-center text-sm text-gray-600 mt-6">
-          Already have an account?{" "}
-          <Link to="/" className="text-blue-600 font-semibold hover:underline">
-            Login
-          </Link>
-        </p>
+            <button
+              type="submit"
+              className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md"
+            >
+              Signup
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleOtpVerification} className="space-y-6">
+            <input
+              type="text"
+              value={otp}
+              onChange={handleOtpChange}
+              placeholder="Enter OTP"
+              required
+              className="mt-1 block w-full px-4 py-2 border rounded-lg"
+            />
+            <button
+              type="submit"
+              className="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md"
+            >
+              Verify OTP
+            </button>
+          </form>
+        )}
+
+        {!isOtpStep && (
+          <p className="text-center text-sm text-gray-600 mt-6">
+            Already have an account?{" "}
+            <Link to="/" className="text-blue-600 font-semibold hover:underline">
+              Login
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

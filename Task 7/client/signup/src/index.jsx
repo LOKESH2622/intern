@@ -17,6 +17,7 @@ export default function Index() {
 
       if (response.status === 200) {
         setCookieData(response.data);
+        localStorage.setItem(response.data)
         alert("Successfully verified");
       } else {
         alert("Verification failed");

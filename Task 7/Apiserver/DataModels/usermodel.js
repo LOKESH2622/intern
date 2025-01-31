@@ -46,6 +46,7 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     required: false, 
   },
+  verified: { type: Boolean, default: false }
 });
 
 const User = mongoose.model("User", UserSchema);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
@@ -7,6 +7,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +25,11 @@ const Login = () => {
       });
 
       setSuccessMessage(response.data.message || "Login successful!");
+      localStorage.setItem('email',email)
       setError("");
+
+      // Navigate to the desired page on successful login
+      navigate("/blogform");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong. Please try again.");
       setSuccessMessage("");

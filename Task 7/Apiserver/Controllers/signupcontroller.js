@@ -33,6 +33,7 @@ const Signup = async (req, res) => {
       password: hashedPassword,
       otp, 
       otpExpiry, 
+      verified: false,
     });
 
     await newUser.save();
