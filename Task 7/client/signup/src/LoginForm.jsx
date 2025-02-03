@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!email || !password) {
-      setError("Please fill in both fields.");
+      toast.error("Please fill in both fields."); 
       return;
     }
 
@@ -24,26 +24,26 @@ const Login = () => {
         Password: password,
       });
 
-      setSuccessMessage(response.data.message || "Login successful!");
-      localStorage.setItem('email',email)
-      setError("");
+      toast.success(response.data.message || "Login successful!"); // Success toast
+      localStorage.setItem("email", email);
 
-      // Navigate to the desired page on successful login
-      navigate("/blogform");
+      setTimeout(() => {
+        navigate("/blogform"); // Navigate after toast
+      }, 1500);
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong. Please try again.");
-      setSuccessMessage("");
+      toast.error(err.response?.data?.message || "Something went wrong. Please try again."); // Error toast
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-800 to-blue-400 p-4">
+      <ToastContainer position="top-center" autoClose={2000} />
+      
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl">
         <h2 className="text-4xl font-extrabold text-center mb-6 text-blue-700 drop-shadow-md">
           Welcome Back
         </h2>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -82,6 +82,7 @@ const Login = () => {
             </button>
           </div>
         </form>
+        
         <p className="text-center text-sm text-gray-600 mt-6">
           Don't have an account?{" "}
           <Link to="/signup" className="text-blue-600 font-semibold hover:underline">

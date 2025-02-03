@@ -5,10 +5,9 @@ import SignupForm from "./signupform";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import CreateBlog from "./pages/CreateBlog";
-import EditBlog from "./pages/EditBlog";
 import BlogList from "./components/BlogList";
 import About from "./pages/about";
-
+import CommentSection from "./pages/comment";
 function App() {
   return (
     <Router>
@@ -21,14 +20,10 @@ function App() {
           <Route path="/about" element={<About/>} />
           <Route path="/blogform" element={<Home />} />
           <Route path="/create" element={<CreateBlog />} />
-          <Route path="/edit/:id" element={<EditBlog />} />
+          <Route path="/CommentSection" element={<CommentSection />} />
         </Routes>
       </div>
     </Router>
   );
 }
-
 export default App;
-
-
-

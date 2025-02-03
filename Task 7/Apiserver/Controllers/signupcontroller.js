@@ -37,7 +37,7 @@ const Signup = async (req, res) => {
     });
 
     await newUser.save();
-
+     
     
     res.status(201).json({
       message: "Signup successful! Please verify your OTP.",

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const blogSchema = new mongoose.Schema({
   userId: { 
     type: mongoose.Schema.Types.ObjectId, 
@@ -41,12 +40,10 @@ const blogSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
-  image: { 
-    type: String, 
-    required: false 
-  } 
+  image: {
+    data: Buffer, 
+    contentType: String, 
+  },
 });
-
 const Blog = mongoose.model("Blog", blogSchema);
-
 export default Blog;

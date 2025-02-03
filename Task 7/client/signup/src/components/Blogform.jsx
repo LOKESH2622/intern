@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
 const BlogForm = ({ blog = null }) => {
   const { id } = useParams(); // For editing a blog
   const [title, setTitle] = useState(blog?.title || "");
@@ -9,6 +8,13 @@ const BlogForm = ({ blog = null }) => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(blog?.image || "");
   const navigate = useNavigate();
+
+  // Handle image preview
+  const handleImageChange = (e) => {
+    const selectedImage = e.target.files[0];
+    setImage(selectedImage);
+    setImagePreview(URL.createObjectURL(selectedImage)); 
+  };
 
   // Handle form submission (both for creating and updating)
   const handleSubmit = async (e) => {
@@ -25,31 +31,26 @@ const BlogForm = ({ blog = null }) => {
     }
 
     try {
-      if (blog) {
-        await axios.put(`http://localhost:5000/api/ublogs`, formData, {
+      if (id) {
+        console.log("Updating blog with ID:", id); 
+  
+        await axios.put(`http://localhost:5000/api/blogs/${id}`, formData, {
+          "userId":email,
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        navigate(`/blogList`); 
       } else {
         await axios.post("http://localhost:5000/api/blogs", formData, {
-          userId:email,
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        navigate("/blogList"); 
       }
+      navigate("/blogList");
     } catch (err) {
       console.error("Error saving/updating blog:", err);
     }
-  };
-
-  const handleImageChange = (e) => {
-    const selectedImage = e.target.files[0];
-    setImage(selectedImage);
-    setImagePreview(URL.createObjectURL(selectedImage)); 
   };
 
   return (
@@ -58,7 +59,6 @@ const BlogForm = ({ blog = null }) => {
         <h2 className="text-2xl font-semibold text-center text-blue-600 mb-4">
           {blog ? "Edit Blog" : "Create Blog"}
         </h2>
-        {/* Title Input */}
         <input
           type="text"
           placeholder="Title"
@@ -67,7 +67,7 @@ const BlogForm = ({ blog = null }) => {
           className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           required
         />
-        {/* Content Textarea */}
+        
         <textarea
           placeholder="Content"
           value={content}
@@ -104,3 +104,7 @@ const BlogForm = ({ blog = null }) => {
 };
 
 export default BlogForm;
+
+
+
+

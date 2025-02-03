@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -13,9 +15,6 @@ const SignupForm = () => {
   });
 
   const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [otpMessage, setOtpMessage] = useState("");
   const [isOtpStep, setIsOtpStep] = useState(false);
 
   const handleChange = (e) => {
@@ -32,13 +31,11 @@ const SignupForm = () => {
 
     try {
       const response = await axios.post("http://localhost:5000/auth/signup", formData);
-      setSuccessMessage(response.data.message);
-      setOtp(response.data.otp); // Note: For testing; remove in production
-      setError("");
+      toast.success(response.data.message || "Signup successful! OTP sent.");
+      setOtp(response.data.otp); // For testing; remove in production
       setIsOtpStep(true);
     } catch (err) {
-      setError(err.response?.data?.error || "Something went wrong. Please try again.");
-      setSuccessMessage("");
+      toast.error(err.response?.data?.error || "Something went wrong. Please try again.");
     }
   };
 
@@ -50,28 +47,21 @@ const SignupForm = () => {
         emailid: formData.emailid,
         otp,
       });
-      setOtpMessage(response.data.message);
-      setError("");
-      setIsOtpStep(false); // Reset to signup form (or redirect to login)
+      toast.success(response.data.message || "OTP Verified! Account created.");
+      setIsOtpStep(false);
     } catch (err) {
-      setError(err.response?.data?.error || "Something went wrong. Please try again.");
-      setOtpMessage("");
+      toast.error(err.response?.data?.error || "Invalid OTP. Please try again.");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-500 px-4">
+      <ToastContainer position="top-center" autoClose={2000} />
+      
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-xl">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
           {isOtpStep ? "Verify OTP" : "Signup Form"}
         </h2>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {successMessage && !isOtpStep && (
-          <p className="text-green-500 text-center mb-4">
-            {successMessage} {otp && `(OTP: ${otp})`}
-          </p>
-        )}
-        {otpMessage && <p className="text-green-500 text-center mb-4">{otpMessage}</p>}
 
         {!isOtpStep ? (
           <form onSubmit={handleSignup} className="space-y-6">
