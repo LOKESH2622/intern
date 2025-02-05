@@ -4,7 +4,6 @@ import { createBlog, getBlogs, getBlogById, updateBlog, deleteBlog, getBlogImage
 
 const blogrouter = express.Router();
 
-// Store images in memory instead of saving to disk
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 

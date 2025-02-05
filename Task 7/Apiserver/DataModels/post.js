@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const blogSchema = new mongoose.Schema({
   userId: { 
-    type: mongoose.Schema.Types.ObjectId, 
+    type: String, 
     ref: 'User', 
     required: true 
   }, 
@@ -16,7 +16,7 @@ const blogSchema = new mongoose.Schema({
   }, 
   comments: [{ 
     userId: { 
-      type: mongoose.Schema.Types.ObjectId, 
+      type: String, 
       ref: 'User' 
     }, 
     comment: { 
@@ -33,7 +33,7 @@ const blogSchema = new mongoose.Schema({
     default: Date.now 
   }, 
   likes: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
+    type: String, 
     ref: 'User' 
   }], 
   viewersCount: { 

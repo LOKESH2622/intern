@@ -3,11 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaHeart } from "react-icons/fa"; // Import heart icon
+import { FaHeart } from "react-icons/fa"; 
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
-  const [likedBlogs, setLikedBlogs] = useState({}); // Track liked status
+  const [likedBlogs, setLikedBlogs] = useState({}); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,8 +31,6 @@ const BlogList = () => {
       );
 
       setBlogs(blogsWithImages);
-
-      // Set initial liked state based on logged-in user
       const userId = localStorage.getItem("userId");
       const initialLikedState = {};
       blogsWithImages.forEach((blog) => {
@@ -58,39 +56,47 @@ const BlogList = () => {
   };
 
   const handleCommentClick = (id) => {
-    navigate(`/CommentSection`);
+    navigate(`/CommentSection/${id}`); 
   };
+  
 
   const handleLike = async (id) => {
-    const userId = localStorage.getItem("email"); // Ensure correct user identification
+    const userId = localStorage.getItem("email"); 
   
     if (!userId) {
       toast.error("User not logged in");
       return;
     }
-  
+
     try {
+      const blog = blogs.find((b) => b._id === id);
+      const isLiked = likedBlogs[id]; 
+      const newLikes = isLiked
+        ? blog.likes.filter((user) => user !== userId)
+        : [...(blog.likes || []), userId]; 
       const res = await axios.post(`http://localhost:5000/api/blogs/like/${id}`, {
         userId,
+        likes: newLikes,
       });
-  
+
+      console.log("Like Response:", res.data);
       setBlogs((prevBlogs) =>
         prevBlogs.map((blog) =>
           blog._id === id ? { ...blog, likes: res.data.likes } : blog
         )
       );
-  
+
       setLikedBlogs((prevLiked) => ({
         ...prevLiked,
-        [id]: res.data.likes.includes(userId), // Update liked status based on backend response
+        [id]: !isLiked, 
       }));
-  
+
     } catch (err) {
-      console.error("Error liking blog:", err);
+      console.error("Error liking blog:", err.response?.data || err.message);
       toast.error("Error liking blog. Please try again.");
     }
   };
-  
+
   return (
     <div className="bg-blue-100 py-6 px-4 min-h-screen flex flex-col items-center">
       <ToastContainer position="top-center" autoClose={2000} />
@@ -117,7 +123,7 @@ const BlogList = () => {
               <div className="flex items-center">
                 <span className="mr-2 text-gray-600">Likes: {blog.likes?.length || 0}</span>
                 
-                {/* Like Button with Heart Icon */}
+      
                 <button onClick={() => handleLike(blog._id)} className="focus:outline-none">
                   <FaHeart
                     size={24}

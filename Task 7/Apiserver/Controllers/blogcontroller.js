@@ -1,33 +1,37 @@
 import Blog from "../DataModels/post.js";
 import User from "../DataModels/usermodel.js";
+import mongoose from "mongoose";
 
 
 export const likeBlog = async (req, res) => {
   const blogId = req.params.id;
-  const userId = req.body.userId; // Ensure userId is received correctly
-  
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
+  const userEmail = req.body.userId; 
+
+  if (!userEmail) {
+    return res.status(400).json({ message: "User email is required" });
   }
 
-  try {
+  try {    
+    const user = await User.findOne({ emailid: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userId = user._id; 
     const blog = await Blog.findById(blogId);
+
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
-
-    const likeIndex = blog.likes.indexOf(userId);
+    const likeIndex = blog.likes.findIndex((id) => id.toString() === userId.toString());
 
     if (likeIndex !== -1) {
-      // If user already liked, remove their like (unlike)
       blog.likes.splice(likeIndex, 1);
     } else {
-      // Otherwise, add the like
-      blog.likes.push(userId);
+      blog.likes.push(new mongoose.Types.ObjectId(userId)); 
     }
-
     await blog.save();
-    
     res.status(200).json({ message: "Like updated successfully!", likes: blog.likes });
   } catch (error) {
     console.error("Error liking blog:", error);
@@ -44,22 +48,19 @@ export const getBlogImage = async (req, res) => {
       return res.status(404).json({ message: "Image not found." });
     }
 
-    res.set("Content-Type", blog.image.contentType); // Set correct MIME type (JPEG, PNG, etc.)
-    res.send(blog.image.data); // Send binary image data
+    res.set("Content-Type", blog.image.contentType); 
+    res.send(blog.image.data); 
   } catch (err) {
     res.status(500).json({ message: "Error fetching image." });
   }
 };
 
-// Get all blogs
 export const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find().populate("comments.userId", "firstname lastname");
-
-    // Convert images to binary buffer before sending
+    const blogs = await Blog.find();
     const blogsWithImages = blogs.map((blog) => ({
       ...blog._doc,
-      image: blog.image ? `/api/blogs/image/${blog._id}` : null, // API route for image
+      image: blog.image ? `/api/blogs/image/${blog._id}` : null, 
     }));
 
     res.status(200).json({ blogs: blogsWithImages });
@@ -68,9 +69,6 @@ export const getBlogs = async (req, res) => {
   }
 };
 
-
-
-// Get a blog by ID
 export const getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id)
@@ -143,6 +141,7 @@ export const deleteBlog = async (req, res) => {
 };
 
 export const updateBlog = async (req, res) => {
+  console.log("sjdfn")
   try {
     const blog = await Blog.findById(req.params.id);
 

@@ -1,22 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 const BlogForm = ({ blog = null }) => {
-  const { id } = useParams(); // For editing a blog
+  const { id } = useParams(); 
   const [title, setTitle] = useState(blog?.title || "");
   const [content, setContent] = useState(blog?.content || "");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(blog?.image || "");
   const navigate = useNavigate();
-
-  // Handle image preview
   const handleImageChange = (e) => {
     const selectedImage = e.target.files[0];
     setImage(selectedImage);
     setImagePreview(URL.createObjectURL(selectedImage)); 
   };
-
-  // Handle form submission (both for creating and updating)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email = localStorage.getItem("email");
@@ -27,7 +23,7 @@ const BlogForm = ({ blog = null }) => {
     formData.append("userId", email);
 
     if (image) {
-      formData.append("image", image); // Attach new image if uploaded
+      formData.append("image", image); 
     }
 
     try {
@@ -35,13 +31,13 @@ const BlogForm = ({ blog = null }) => {
         console.log("Updating blog with ID:", id); 
   
         await axios.put(`http://localhost:5000/api/blogs/${id}`, formData, {
-          "userId":email,
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
       } else {
         await axios.post("http://localhost:5000/api/blogs", formData, {
+          
           headers: {
             "Content-Type": "multipart/form-data",
           },
